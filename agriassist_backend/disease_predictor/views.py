@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 import os
 import numpy as np
 import tensorflow as tf
@@ -8,6 +6,7 @@ from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.core.files.storage import FileSystemStorage
+from django.shortcuts import render
 
 # 1. Loaded the model globally so it only loads ONCE when the server starts
 MODEL_PATH = os.path.join(settings.BASE_DIR, 'saved_models', 'agriassist_base_model.keras')
@@ -54,6 +53,9 @@ CLASS_NAMES = [
     "Tomato___Tomato_mosaic_virus",
     "Tomato___healthy",
 ]
+
+def home(request):
+    return render(request, 'upload.html')
 
 @api_view(['POST'])
 def predict_disease(request):

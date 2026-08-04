@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from disease_predictor import views as predictor_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/agri/', include('disease_predictor.urls')), # Defines my API endpoint
+    path('', predictor_views.home, name='home') ## <-- 2. Route the root URL to my UI
 ]
 
 # Allowing Django to serve media files in development
