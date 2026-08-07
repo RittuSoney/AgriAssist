@@ -4,98 +4,237 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgriAssist AI | Disease Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2E7D32;
-            --surface: #ffffff;
-            --background: #f4f7f6;
-            --text: #333333;
+            --forest: #1B4332;
+            --forest-dark: #10281c;
+            --leaf: #52796F;
+            --leaf-light: #84A98C;
+            --sage: #E8F0E3;
+            --cream: #FBF8F1;
+            --soil: #8C6A4B;
+            --gold: #D4A017;
+            --ink: #26332C;
+            --ink-soft: #5C6D63;
+            --line: #D8E3D3;
         }
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--background);
-            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--ink);
+            margin: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            padding: 2rem 1rem;
+            background:
+                radial-gradient(circle at 12% 8%, rgba(82,121,111,0.16), transparent 45%),
+                radial-gradient(circle at 88% 92%, rgba(212,160,23,0.12), transparent 40%),
+                var(--sage);
+            position: relative;
+            overflow: hidden;
+        }
+        /* faint vein / leaf pattern texture */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%2352796F' stroke-width='1' opacity='0.08'%3E%3Cpath d='M70 10 C 40 40, 40 100, 70 130'/%3E%3Cpath d='M70 10 C 100 40, 100 100, 70 130'/%3E%3Cpath d='M70 35 L 45 55'/%3E%3Cpath d='M70 55 L 40 70'/%3E%3Cpath d='M70 75 L 42 88'/%3E%3Cpath d='M70 95 L 48 105'/%3E%3Cpath d='M70 35 L 95 55'/%3E%3Cpath d='M70 55 L 100 70'/%3E%3Cpath d='M70 75 L 98 88'/%3E%3Cpath d='M70 95 L 92 105'/%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
         }
         .container {
-            background-color: var(--surface);
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            background-color: var(--cream);
+            padding: 2.75rem 2.25rem 2.25rem;
+            border-radius: 22px;
+            box-shadow:
+                0 1px 2px rgba(27,67,50,0.06),
+                0 24px 48px -12px rgba(27,67,50,0.22);
             text-align: center;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid var(--line);
         }
-        h1 { margin-top: 0; color: var(--primary); }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--leaf);
+            background: var(--sage);
+            padding: 6px 12px;
+            border-radius: 999px;
+            margin-bottom: 1rem;
+        }
+        .badge svg { width: 12px; height: 12px; }
+        h1 {
+            margin: 0 0 0.35rem;
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 2rem;
+            letter-spacing: -0.01em;
+            color: var(--forest);
+        }
+        p.subtitle {
+            margin: 0 0 1.75rem;
+            color: var(--ink-soft);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
         .upload-box {
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
+            display: block;
+            border: 1.5px dashed var(--leaf-light);
+            border-radius: 16px;
+            padding: 2rem 1.25rem;
+            margin-bottom: 1.25rem;
             cursor: pointer;
-            transition: border-color 0.3s ease;
+            background: linear-gradient(180deg, rgba(232,240,227,0.5), rgba(232,240,227,0.15));
+            transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.15s ease;
         }
-        .upload-box:hover { border-color: var(--primary); }
+        .upload-box:hover {
+            border-color: var(--leaf);
+            background-color: rgba(82,121,111,0.08);
+        }
+        .upload-box.has-file {
+            border-style: solid;
+            border-color: var(--leaf);
+        }
+        .upload-icon {
+            width: 42px;
+            height: 42px;
+            margin: 0 auto 0.75rem;
+            color: var(--leaf);
+        }
+        #fileName {
+            font-size: 0.92rem;
+            color: var(--ink-soft);
+            font-weight: 500;
+            word-break: break-word;
+        }
+        .hint {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--ink-soft);
+            opacity: 0.7;
+            margin-top: 4px;
+        }
         input[type="file"] { display: none; }
         button {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--forest), var(--leaf));
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 1rem;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.98rem;
+            letter-spacing: 0.01em;
             cursor: pointer;
             width: 100%;
-            transition: background 0.3s ease;
+            box-shadow: 0 8px 20px -8px rgba(27,67,50,0.55);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
         }
-        button:hover { background-color: #1B5E20; }
+        button:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -8px rgba(27,67,50,0.6); }
+        button:active { transform: translateY(0); }
+        button:disabled { opacity: 0.75; cursor: progress; transform: none; }
         #result {
             margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 6px;
-            background-color: #e8f5e9;
+            padding: 1.25rem 1.25rem 1.35rem;
+            border-radius: 14px;
+            background-color: var(--sage);
+            border: 1px solid var(--line);
             display: none;
+            text-align: left;
+            animation: rise 0.35s ease;
         }
-        .disease-name { font-weight: bold; font-size: 1.2rem; color: var(--primary); }
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-eyebrow {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--leaf);
+            margin-bottom: 6px;
+        }
+        .disease-name {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: var(--forest);
+            text-transform: capitalize;
+        }
+        .confidence-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.85rem;
+            color: var(--ink-soft);
+            margin-top: 14px;
+        }
+        #confidenceText {
+            font-weight: 700;
+            color: var(--forest);
+            font-size: 0.95rem;
+        }
         .confidence-bar-container {
             width: 100%;
-            background-color: #ddd;
-            border-radius: 4px;
-            height: 10px;
+            background-color: #d9e3d4;
+            border-radius: 999px;
+            height: 8px;
             margin-top: 8px;
             overflow: hidden;
         }
         .confidence-bar {
             height: 100%;
-            background-color: var(--primary);
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--gold), var(--leaf));
             width: 0%;
-            transition: width 0.5s ease-in-out;
+            transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
     </style>
 </head>
 <body>
-
     <div class="container">
+        <span class="badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M12 22c6-4 9-9 9-14a9 9 0 0 0-9-5 9 9 0 0 0-9 5c0 5 3 10 9 14Z"/>
+                <path d="M12 22V9"/>
+            </svg>
+            Plant Health Scanner
+        </span>
         <h1>AgriAssist AI</h1>
-        <p>Upload a plant leaf image for instant diagnosis.</p>
-
+        <p class="subtitle">Upload a plant leaf image for instant diagnosis.</p>
         <!-- The Upload Form -->
         <form id="uploadForm">
+            {% csrf_token %}  <!-- Cross-Site Request Forgery (CSRF) protection -->
             <label class="upload-box" id="dropzone">
+                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 21c6-4 8-8 8-13a8 8 0 0 0-8-4 8 8 0 0 0-8 4c0 5 2 9 8 13Z"/>
+                    <path d="M12 21v-9"/>
+                    <path d="M12 12c-2-2-2-4-1-6"/>
+                </svg>
                 <span id="fileName">Click to select an image</span>
+                <span class="hint">JPG or PNG, clear close-up of the leaf</span>
                 <input type="file" id="imageInput" name="image" accept="image/*" required>
             </label>
             <button type="submit" id="submitBtn">Analyze Leaf</button>
         </form>
-
         <!-- The Results Box -->
         <div id="result">
+            <div class="result-eyebrow">Diagnosis</div>
             <div class="disease-name" id="diseaseName"></div>
-            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-top: 8px;">
+            <div class="confidence-row">
                 <span>Confidence</span>
                 <span id="confidenceText">0%</span>
             </div>
@@ -104,46 +243,41 @@
             </div>
         </div>
     </div>
-
     <script>
         const imageInput = document.getElementById('imageInput');
         const fileNameDisplay = document.getElementById('fileName');
+        const dropzone = document.getElementById('dropzone');
         const uploadForm = document.getElementById('uploadForm');
         const submitBtn = document.getElementById('submitBtn');
         const resultDiv = document.getElementById('result');
-        
         // Update file name when selected
         imageInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
                 fileNameDisplay.textContent = e.target.files[0].name;
+                dropzone.classList.add('has-file');
             }
         });
-
         // Handle the API submission
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault(); // Stop page from refreshing
-            
             const file = imageInput.files[0];
             if (!file) return;
-
             // Package the image
             const formData = new FormData();
             formData.append('image', file);
-
             // Update UI to show loading state
             submitBtn.textContent = "Analyzing...";
             submitBtn.disabled = true;
             resultDiv.style.display = "none";
-
             try {
+                // Grab the hidden CSRF token generated by Django
+               const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 // Send to Django Backend
                 const response = await fetch('/api/agri/predict/', {
                     method: 'POST',
                     body: formData
                 });
-
                 const data = await response.json();
-
                 if (response.ok) {
                     // Render the result
                     document.getElementById('diseaseName').textContent = data.disease.replace(/_/g, ' ');
