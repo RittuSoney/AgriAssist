@@ -78,12 +78,29 @@ def predict_disease(request):
         # Making the prediction
         predictions = model.predict(img_array)
         predicted_class_idx = np.argmax(predictions[0])
-        confidence = round(float(np.max(predictions[0])) * 100, 2)
+        confidence = float(np.max(predictions[0]) * 100)
+        predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
 
-        result = {
-            'disease': CLASS_NAMES[predicted_class_idx],
-            'confidence': confidence
-        }
+        # 1. The 80% Confidence Rejection Threshold
+        if confidence < 85.0:
+            return Response({
+                'error': 'Unable to confidently identify disease. Image not recognized as a supported plant.'
+            }, status=400) # Returning a 400 status tells the frontend it failed
+
+        # 2. Parse the string 
+        parts = predicted_class.split('_')
+        crop_name = parts[0]
+
+        if len(parts) > 1:
+            disease_name = ' '.join(parts[1:])
+        else:
+            disease_name = 'Healthy'
+
+        return Response({
+            'crop': crop_name,
+            'disease': disease_name,
+            'confidence': round(confidence, 2)
+        })
 
     except Exception as e:
         return Response({'error': str(e)}, status=500)

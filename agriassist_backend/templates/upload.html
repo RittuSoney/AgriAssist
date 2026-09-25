@@ -36,7 +36,7 @@
                 radial-gradient(circle at 88% 92%, rgba(212,160,23,0.12), transparent 40%),
                 var(--sage);
             position: relative;
-            overflow: hidden;
+            overflow: auto;
         }
         /* faint vein / leaf pattern texture */
         body::before {
@@ -233,7 +233,17 @@
         <!-- The Results Box -->
         <div id="result">
             <div class="result-eyebrow">Diagnosis</div>
-            <div class="disease-name" id="diseaseName"></div>
+            
+            <div style="margin-bottom: 0.75rem;">
+                <span style="font-size: 0.75rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em;">Crop</span><br>
+                <span class="disease-name" id="cropName"></span>
+            </div>
+            
+            <div>
+                <span style="font-size: 0.75rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em;">Disease</span><br>
+                <span class="disease-name" id="diseaseName"></span>
+            </div>
+
             <div class="confidence-row">
                 <span>Confidence</span>
                 <span id="confidenceText">0%</span>
@@ -280,10 +290,11 @@
                 const data = await response.json();
                 if (response.ok) {
                     // Render the result
-                    document.getElementById('diseaseName').textContent = data.disease.replace(/_/g, ' ');
+                    document.getElementById('cropName').textContent = data.crop;
+                    document.getElementById('diseaseName').textContent = data.disease;
                     document.getElementById('confidenceText').textContent = data.confidence + '%';
                     document.getElementById('confidenceBar').style.width = data.confidence + '%';
-                    resultDiv.style.display = "block";
+                    resultDiv.style.display = "block"
                 } else {
                     alert("Error: " + data.error);
                 }
